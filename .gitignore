@@ -130,3 +130,6 @@ dmypy.json
 
 # vscode
 .vscode
+
+# dont commit the sqlite database
+*.db
