@@ -7,14 +7,14 @@ base_directory = os.path.abspath(os.path.dirname(__file__))
 
 # Default config class
 class Config:
-    SECRET_KEY = os.getenv('OLB_SECRET_KEY', 'joel is great')  # secret key for jwt encoding, set this in environment variables
+    SECRET_KEY = os.getenv("OLB_SECRET_KEY", "joel is great")  # secret key for jwt encoding, set this in environment variables
     DEBUG = False
 
 
 # App config for dev version
 class Dev_Config(Config):
     DEBUG = True
-    SQLALCHEMY_DATABASE_URI = f'sqlite:///{os.path.join(base_directory, "olb_dev.db")}'
+    SQLALCHEMY_DATABASE_URI = f"sqlite:///{os.path.join(base_directory, 'olb_dev.db')}"
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
 
@@ -22,7 +22,7 @@ class Dev_Config(Config):
 class Test_Config(Config):
     DEBUG = True
     TESTING = True
-    SQLALCHEMY_DATABASE_URI = f'sqlite:///{os.path.join(base_directory, "olb_test.db")}'
+    SQLALCHEMY_DATABASE_URI = f"sqlite:///{os.path.join(base_directory, 'olb_test.db')}"
     PRESERVE_CONTEXT_ON_EXCEPTION = False
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 

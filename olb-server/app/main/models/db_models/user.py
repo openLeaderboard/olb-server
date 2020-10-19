@@ -1,6 +1,6 @@
 from passlib.hash import argon2
 
-from .. import db
+from app.main import db
 
 
 # User database model
