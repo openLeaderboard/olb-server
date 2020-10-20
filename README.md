@@ -18,9 +18,14 @@ cd olb-server
 poetry install
 ```
 
+## Setup database
+```bash
+poetry run manager.py db upgrade
+```
+
 ## Run
 ```bash
-poetry run manager.py run_debug
+poetry run manager.py run
 ```
 
 ## Setup VSCode to use right environment
