@@ -7,7 +7,10 @@ base_directory = os.path.abspath(os.path.dirname(__file__))
 
 # Default config class
 class Config:
-    SECRET_KEY = os.getenv("OLB_SECRET_KEY", "joel is great")  # secret key for jwt encoding, set this in environment variables
+    JWT_SECRET_KEY = os.getenv("OLB_SECRET_KEY", "joel is great")  # secret key for jwt encoding, set this in environment variables
+    JWT_ACCESS_TOKEN_EXPIRES = False  # Access tokens don't expire, change this before monetizing this program lmao
+    JWT_BLACKLIST_ENABLED = True
+    JWT_BLACKLIST_TOKEN_CHECKS = ["access"]
     DEBUG = False
 
 
@@ -38,5 +41,3 @@ configs = dict(
     test=Test_Config,
     prod=Prod_Config
 )
-
-key = Config.SECRET_KEY

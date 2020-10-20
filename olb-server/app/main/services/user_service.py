@@ -1,3 +1,5 @@
+from flask_jwt_extended import create_access_token
+
 from app.main import db
 from app.main.models.db_models.user import User
 
@@ -9,15 +11,17 @@ def create_user(user_data):
     if not user_exists:
         new_user = User(
             email=user_data["email"],
-            name=user_data["username"],
+            name=user_data["name"],
             password=user_data["password"]
         )
         db.session.add(new_user)
         db.session.commit()
 
+        jwt = create_access_token(identity=new_user.id)
         response = {
             "success": True,
-            "message": "User successfully registered."
+            "message": "User successfully registered.",
+            "access_token": f"Bearer {jwt}"
         }
     else:
         response = {
@@ -30,15 +34,15 @@ def create_user(user_data):
 
 # searches for users whose name contains the provided string
 def search_users(name):
-    users = db.session.query(User.name.label("username"), User.id.label("id")).filter(User.name.contains(name))
-    users_dict = map(lambda user: user._asdict(), users)
+    users = db.session.query(User.name.label("name"), User.id.label("id")).filter(User.name.contains(name))
+    users_dict = list(map(lambda user: user._asdict(), users))
 
-    return list(users_dict)
+    return users_dict
 
 
 # gets a list of all users
 def get_all_users():
-    users = db.session.query(User.name.label("username"), User.id.label("id")).all()
-    users_dict = map(lambda user: user._asdict(), users)
+    users = db.session.query(User.name.label("name"), User.id.label("id")).all()
+    users_dict = list(map(lambda user: user._asdict(), users))
 
-    return list(users_dict)
+    return users_dict

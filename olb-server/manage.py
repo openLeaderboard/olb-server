@@ -3,14 +3,16 @@ import os
 from flask_migrate import Migrate, MigrateCommand
 from flask_script import Manager
 
-from app.main import create_app, db
-from app.main.models.db_models import user # noqa F401 -- needs to be here so manager will recognize changes for migrations
+from app.main import create_app, db, jwt
+from app.main.models.db_models import user, blacklist_token # noqa F401 -- needs to be here so manager will recognize changes for migrations
+from app.main.services.auth_service import is_token_in_blacklist
 
 from app import blueprint
 
 
 app_env = os.getenv("OLB_ENV", "dev")  # set this environment variable, defaults to dev
 app = create_app(app_env)
+jwt.token_in_blacklist_loader(is_token_in_blacklist)
 app.register_blueprint(blueprint)
 app.app_context().push()
 
