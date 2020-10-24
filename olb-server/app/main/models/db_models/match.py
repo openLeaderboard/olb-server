@@ -5,12 +5,15 @@ from app.main import db
 
 # db model for matches (pending and verified)
 class Match(db.Model):
-    __tablename__ = "board_invite"
+    __tablename__ = "match"
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    from_user_id = db.Column(db.Integer, db.ForeignKey("user.id"))
-    to_user_id = db.Column(db.Integer, db.ForeignKey("user.id"))
-    board_id = db.Column(db.Integer, db.ForeignKey("board.id"))
+    from_user_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
+    to_user_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
+    board_id = db.Column(db.Integer, db.ForeignKey("board.id"), nullable=False)
+    winner_user_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=True)
+    winner_rating_change = db.Column(db.Float, nullable=False)
+    verified = db.Column(db.Boolean, nullable=False, default=False)
 
     from_user = relationship("User", back_populates="sent_board_invites")
     to_user = relationship("User", back_populates="received_board_invites")

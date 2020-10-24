@@ -4,7 +4,7 @@ from flask_migrate import Migrate, MigrateCommand
 from flask_script import Manager
 
 from app.main import create_app, db, jwt
-from app.main.models.db_models import * # noqa F401 -- needs to be here so manager will recognize changes for migrations
+from app.main.models.db_models import blacklist_token, board_invite, board, match, user_board, user # noqa F401 -- needs to be here so manager will recognize changes for migrations
 from app.main.services.auth_service import is_token_in_blacklist
 
 from app import blueprint
