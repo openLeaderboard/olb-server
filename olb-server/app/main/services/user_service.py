@@ -2,6 +2,7 @@ from flask_jwt_extended import create_access_token
 
 from app.main import db
 from app.main.models.db_models.user import User
+from app.main.models.db_models.user_board import UserBoard
 
 
 # Creates a new user, returns error if email already in use
@@ -34,15 +35,29 @@ def create_user(user_data):
 
 # searches for users whose name contains the provided string
 def search_users(name):
-    users = db.session.query(User.name.label("name"), User.id.label("id")).filter(User.name.contains(name))
+    users = db.session.query(
+                User.name.label("name"),
+                User.id.label("id"),
+                db.func.count(UserBoard.user_id).label("board_count")
+            ).outerjoin(UserBoard).group_by(User.id).filter(User.name.contains(name))
     users_dict = list(map(lambda user: user._asdict(), users))
 
-    return users_dict
+    response = {
+        "search_result": users_dict
+    }
+    return response
 
 
 # gets a list of all users
 def get_all_users():
-    users = db.session.query(User.name.label("name"), User.id.label("id")).all()
+    users = db.session.query(
+                User.name.label("name"),
+                User.id.label("id"),
+                db.func.count(UserBoard.user_id).label("board_count")
+            ).outerjoin(UserBoard).group_by(User.id).all()
     users_dict = list(map(lambda user: user._asdict(), users))
 
-    return users_dict
+    response = {
+        "search_result": users_dict
+    }
+    return response

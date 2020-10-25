@@ -12,6 +12,6 @@ class BoardInvite(db.Model):
     to_user_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
     board_id = db.Column(db.Integer, db.ForeignKey("board.id"), nullable=False)
 
-    from_user = relationship("User", back_populates="sent_board_invites")
-    to_user = relationship("User", back_populates="received_board_invites")
+    from_user = relationship("User", backref="sent_board_invites", foreign_keys=[from_user_id])
+    to_user = relationship("User", backref="received_board_invites", foreign_keys=[to_user_id])
     board = relationship("Board", back_populates="board_invites")
