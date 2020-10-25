@@ -133,3 +133,6 @@ dmypy.json
 
 # dont commit the sqlite database
 *.db
+
+# apple bad
+.DS_Store
