@@ -136,3 +136,4 @@ dmypy.json
 
 # apple bad
 .DS_Store
+olb-server/poetry.lock
