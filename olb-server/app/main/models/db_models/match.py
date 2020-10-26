@@ -15,6 +15,6 @@ class Match(db.Model):
     winner_rating_change = db.Column(db.Float, nullable=False)
     verified = db.Column(db.Boolean, nullable=False, default=False)
 
-    from_user = relationship("User", back_populates="sent_board_invites")
-    to_user = relationship("User", back_populates="received_board_invites")
-    board = relationship("Board", back_populates="board_invites")
+    from_user = relationship("User", backref="sent_match", foreign_keys=[from_user_id])
+    to_user = relationship("User", backref="received_match", foreign_keys=[to_user_id])
+    board = relationship("Board", back_populates="matches")
