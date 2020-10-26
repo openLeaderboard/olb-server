@@ -9,11 +9,13 @@ api = UserDto.namespace
 
 
 @api.route("/<user_id>")
+@api.param("user_id", "The specified user's id")
 class GetUserProfile(Resource):
 
     @api.doc("Get the profile info of the user with the specified user id, token required", security="jwt")
+    @api.marshal_with(UserDto.user_profile_response)
     @jwt_required
-    def get(self):
+    def get(self, user_id):
         stub = {
             "user_id": 1,
             "name": "Joel",
@@ -46,11 +48,13 @@ class GetUserProfile(Resource):
 
 
 @api.route("/<user_id>/activity")
+@api.param("user_id", "The specified user's id")
 class GetUserActivity(Resource):
 
     @api.doc("Get the activity of the user with the specified user id, token required", security="jwt")
+    @api.marshal_with(UserDto.user_activity_response)
     @jwt_required
-    def get(self):
+    def get(self, user_id):
         stub = {
             "matches": [
                 {
@@ -71,11 +75,13 @@ class GetUserActivity(Resource):
 
 
 @api.route("/<user_id>/boards")
+@api.param("user_id", "The specified user's id")
 class GetUserBoards(Resource):
 
     @api.doc("Get the boards of the user with the specified user id, token required", security="jwt")
+    @api.marshal_with(UserDto.user_boards_response)
     @jwt_required
-    def get(self):
+    def get(self, user_id):
         stub = {
             "boards": [
                 {
@@ -107,6 +113,7 @@ class GetUserBoards(Resource):
 class GetMyActivity(Resource):
 
     @api.doc("Get the activity of the logged in user, token required", security="jwt")
+    @api.marshal_with(UserDto.user_activity_response)
     @jwt_required
     def get(self):
         stub = {
@@ -132,6 +139,7 @@ class GetMyActivity(Resource):
 class GetMyBoards(Resource):
 
     @api.doc("Get the boards of the logged in user, token required", security="jwt")
+    @api.marshal_with(UserDto.user_boards_response)
     @jwt_required
     def get(self):
         stub = {
@@ -165,6 +173,7 @@ class GetMyBoards(Resource):
 class GetMyCreatedBoards(Resource):
 
     @api.doc("Get the boards created by the logged in user, token required", security="jwt")
+    @api.marshal_with(UserDto.user_boards_response)
     @jwt_required
     def get(self):
         stub = {
@@ -198,6 +207,7 @@ class GetMyCreatedBoards(Resource):
 class GetMyFavouriteBoards(Resource):
 
     @api.doc("Get the favourite boards of the logged in user (should be a max of 5), token required", security="jwt")
+    @api.marshal_with(UserDto.user_boards_response)
     @jwt_required
     def get(self):
         stub = {
@@ -231,6 +241,7 @@ class GetMyFavouriteBoards(Resource):
 class GetMyNotFavouriteBoards(Resource):
 
     @api.doc("Get the boards that are not favourites of the logged in user (for selecting new favourites), token required", security="jwt")
+    @api.marshal_with(UserDto.user_boards_response)
     @jwt_required
     def get(self):
         stub = {
@@ -264,6 +275,7 @@ class GetMyNotFavouriteBoards(Resource):
 class GetMyProfile(Resource):
 
     @api.doc("Get the profile info of the logged in user, token required", security="jwt")
+    @api.marshal_with(UserDto.user_profile_response)
     @jwt_required
     def get(self):
         stub = {
@@ -312,6 +324,7 @@ class RegisterUser(Resource):
 class GetAllUsers(Resource):
 
     @api.doc("Get all users, token required", security="jwt")
+    @api.marshal_with(UserDto.user_search_response)
     @jwt_required
     def get(self):
         return get_all_users()
@@ -322,6 +335,7 @@ class GetAllUsers(Resource):
 class SearchUsers(Resource):
 
     @api.doc("Search for users containing <username> string, token required", security="jwt")
+    @api.marshal_with(UserDto.user_search_response)
     @jwt_required
     def get(self, username):
         return search_users(username)
