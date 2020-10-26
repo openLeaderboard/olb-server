@@ -47,3 +47,55 @@ class BoardDto:
     board_search_response = namespace.model("board_search_response", {
         "search_result": fields.List(fields.Nested(board_search))
     })
+
+    create_board = namespace.model("create_board", {
+        "board_name": fields.String(required=True, description="The name of the new board"),
+        "public": fields.Boolean(required=True, description="Whether or not this is a public board")
+    })
+
+    create_board_response = namespace.model("create_board_response", {
+        "success": fields.Boolean(required=True, description="Whether or not the board was successfully created"),
+        "message": fields.String(required=True, description="Description of success or failure"),
+        "board_id": fields.Integer(required=True, description="Id of the newly created board")
+    })
+
+    edit_board = namespace.model("edit_board", {
+        "board_name": fields.String(required=True, description="The new name of the board"),
+        "public": fields.Boolean(required=True, description="Whether or not this is a public board")
+    })
+
+    edit_board_response = namespace.model("edit_board_response", {
+        "success": fields.Boolean(required=True, description="Whether or not the board was successfully edited"),
+        "message": fields.String(required=True, description="Description of success or failure")
+    })
+
+    invite_to_board = namespace.model("invite_to_board", {
+        "board_id": fields.Integer(required=True, description="The id of the board being invited to"),
+        "user_id": fields.Integer(required=True, description="The id of the user being invited")
+    })
+
+    invite_to_board_response = namespace.model("invite_to_board_response", {
+        "success": fields.Boolean(required=True, description="Whether or not the invite was successfully created"),
+        "message": fields.String(required=True, description="Description of success or failure")
+    })
+
+    join_board = namespace.model("join_board", {
+        "board_id": fields.Integer(required=True, description="The id of the board being joined"),
+    })
+
+    join_board_response = namespace.model("join_board_response", {
+        "success": fields.Boolean(required=True, description="Whether or not the board was successfully joined"),
+        "message": fields.String(required=True, description="Description of success or failure")
+    })
+
+    remove_from_board = namespace.model("remove_from_board", {
+        "remove": fields.Boolean(required=True, description="Whether or not the user is being removed or just leaving\
+                                                            {True = removing, False = leaving}"),
+        "board_id": fields.Integer(required=True, description="The id of the board being left"),
+        "user_id": fields.Integer(required=False, description="The id of the user being removed (needed if remove is True)")
+    })
+
+    remove_from_board_response = namespace.model("remove_from_board_response", {
+        "success": fields.Boolean(required=True, description="Whether or not the leave/remove was successful"),
+        "message": fields.String(required=True, description="Description of success or failure")
+    })

@@ -52,6 +52,22 @@ class GetIncomingSubmissions(Resource):
         return stub
 
 
+@api.route("/invite")
+class AcceptDeclineCancelBoardInvite(Resource):
+
+    @api.doc("Add, Decline, or Cancel a board invite", security="jwt")
+    @api.expect(NotificationDto.accept_decline_invite, validate=True)
+    @api.marshal_with(NotificationDto.accept_decline_invite_response)
+    @jwt_required
+    def post(self):
+        user_data = request.json
+        stub = {
+            "success": True,
+            "message": "Successfully accepted board invite"
+        }
+        return stub
+
+
 @api.route("/invite/<invite_id>")
 @api.param("invite_id", "The specified board invite's id")
 class GetBoardInvite(Resource):
@@ -114,6 +130,22 @@ class GetOutgoingSubmissions(Resource):
                     "match_id": 4
                 }
             ]
+        }
+        return stub
+
+
+@api.route("/submission")
+class AcceptDeclineCancelSubmission(Resource):
+
+    @api.doc("Add, Decline, or Cancel a match submission", security="jwt")
+    @api.expect(NotificationDto.accept_decline_submission, validate=True)
+    @api.marshal_with(NotificationDto.accept_decline_submission_response)
+    @jwt_required
+    def post(self):
+        user_data = request.json
+        stub = {
+            "success": True,
+            "message": "Successfully verified match"
         }
         return stub
 

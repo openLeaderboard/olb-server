@@ -271,6 +271,22 @@ class GetMyNotFavouriteBoards(Resource):
         return stub
 
 
+@api.route("/favourite")
+class AddRemoveFavouriteBoard(Resource):
+
+    @api.doc("Add or remove a board to/from favourites", security="jwt")
+    @api.expect(UserDto.favourite_board, validate=True)
+    @api.marshal_with(UserDto.favourite_board_response)
+    @jwt_required
+    def post(self):
+        user_data = request.json
+        stub = {
+            "success": True,
+            "message": "Successfully added board to favourites"
+        }
+        return stub
+
+
 @api.route("/profile")
 class GetMyProfile(Resource):
 

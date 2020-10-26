@@ -59,3 +59,14 @@ class UserDto:
     user_search_response = namespace.model("user_search_response", {
         "search_result": fields.List(fields.Nested(user_search))
     })
+
+    favourite_board = namespace.model("favourite_board", {
+        "add_favourite": fields.Boolean(required=True, description="Whether or not the board is being added or removed from favourites\
+                                                                    {True = add, False = remove}"),
+        "board_id": fields.Integer(required=True, description="the id of the board to add/remove from favourites")
+    })
+
+    favourite_board_response = namespace.model("favourite_board_response", {
+        "success": fields.Boolean(required=True, description="Whether or not the board was successfully added/removed to/from favourites"),
+        "message": fields.String(required=True, description="Description of success or failure")
+    })

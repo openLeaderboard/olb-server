@@ -106,6 +106,87 @@ class GetBoardMembers(Resource):
         return stub
 
 
+@api.route("/create")
+class CreateBoard(Resource):
+
+    @api.doc("Create new board", security="jwt")
+    @api.expect(BoardDto.create_board, validate=True)
+    @api.marshal_with(BoardDto.create_board_response)
+    @jwt_required
+    def post(self):
+        user_data = request.json
+        stub = {
+            "success": True,
+            "message": "Successfully created",
+            "board_id": 3
+        }
+        return stub
+
+
+@api.route("/edit")
+class EditBoard(Resource):
+
+    @api.doc("Edit existing board", security="jwt")
+    @api.expect(BoardDto.edit_board, validate=True)
+    @api.marshal_with(BoardDto.edit_board_response)
+    @jwt_required
+    def post(self):
+        user_data = request.json
+        stub = {
+            "success": True,
+            "message": "Successfully edited board"
+        }
+        return stub
+
+
+@api.route("/invite")
+class InviteUserToBoard(Resource):
+
+    @api.doc("Invite a user to a board", security="jwt")
+    @api.expect(BoardDto.invite_to_board, validate=True)
+    @api.marshal_with(BoardDto.invite_to_board_response)
+    @jwt_required
+    def post(self):
+        user_data = request.json
+        stub = {
+            "success": True,
+            "message": "Invite successfully created",
+        }
+        return stub
+
+
+@api.route("/join")
+class JoinBoard(Resource):
+
+    @api.doc("Join a board", security="jwt")
+    @api.expect(BoardDto.join_board, validate=True)
+    @api.marshal_with(BoardDto.join_board_response)
+    @jwt_required
+    def post(self):
+        user_data = request.json
+        stub = {
+            "success": True,
+            "message": "Successfully joined board",
+        }
+        return stub
+
+
+@api.route("/remove")
+class RemoveUserFromBoard(Resource):
+
+    @api.doc("Leave a board/remove a user from a board", security="jwt")
+    @api.expect(BoardDto.remove_from_board, validate=True)
+    @api.marshal_with(BoardDto.remove_from_board_response)
+    @jwt_required
+    def post(self):
+        user_data = request.json
+        stub = {
+            "success": True,
+            "message": "Successfully left board",
+        }
+        return stub
+
+
 @api.route("/search")
 class GetAllBoards(Resource):
 

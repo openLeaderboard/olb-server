@@ -63,3 +63,25 @@ class NotificationDto:
         "to_name": fields.String(required=True, description="sending User's username"),
         "match_id": fields.Integer(required=True, description="the board invite's id")
     })
+
+    accept_decline_invite = namespace.model("accept_decline_invite", {
+        "accept": fields.Boolean(required=True, description="Whether or not the invite is being accepted or declined (or cancelled)\
+                                                            {True = accept, False = decline, user is sender = cancel}"),
+        "invite_id": fields.Integer(required=True, description="the id of the invite")
+    })
+
+    accept_decline_invite_response = namespace.model("accept_decline_invite_response", {
+        "success": fields.Boolean(required=True, description="Whether or not the invite was successfully accepted/declined/cancelled"),
+        "message": fields.String(required=True, description="Description of success or failure")
+    })
+
+    accept_decline_submission = namespace.model("accept_decline_submission", {
+        "accept": fields.Boolean(required=True, description="Whether or not the match is being accepted or declined (or cancelled)\
+                                                            {True = accept, False = decline, user is sender = cancel}"),
+        "match_id": fields.Integer(required=True, description="the id of the match")
+    })
+
+    accept_decline_submission_response = namespace.model("accept_decline_submission_response", {
+        "success": fields.Boolean(required=True, description="Whether or not the invite was successfully accepted/declined/cancelled"),
+        "message": fields.String(required=True, description="Description of success or failure")
+    })
