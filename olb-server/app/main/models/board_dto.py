@@ -50,7 +50,7 @@ class BoardDto:
 
     create_board = namespace.model("create_board", {
         "board_name": fields.String(required=True, description="The name of the new board"),
-        "public": fields.Boolean(required=True, description="Whether or not this is a public board")
+        "is_public": fields.Boolean(required=True, description="Whether or not this is a public board")
     })
 
     create_board_response = namespace.model("create_board_response", {
