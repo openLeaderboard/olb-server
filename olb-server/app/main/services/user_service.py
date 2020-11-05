@@ -38,7 +38,7 @@ def search_users(name):
     users = db.session.query(
                 User.name.label("name"),
                 User.id.label("id"),
-                db.func.count(UserBoard.user_id).label("board_count")
+                db.func.count(db.case([(UserBoard.is_active, True)])).label("board_count")
             ).outerjoin(UserBoard).group_by(User.id).filter(User.name.contains(name))
     users_dict = list(map(lambda user: user._asdict(), users))
 
@@ -53,7 +53,7 @@ def get_all_users():
     users = db.session.query(
                 User.name.label("name"),
                 User.id.label("id"),
-                db.func.count(UserBoard.user_id).label("board_count")
+                db.func.count(db.case([(UserBoard.is_active, True)])).label("board_count")
             ).outerjoin(UserBoard).group_by(User.id).all()
     users_dict = list(map(lambda user: user._asdict(), users))
 

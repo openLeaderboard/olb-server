@@ -3,7 +3,7 @@ from flask_restx import Resource
 from flask_jwt_extended import jwt_required
 
 from ..models.board_dto import BoardDto
-# from ..services.board_service import create_user, search_users, get_all_users
+from ..services.board_service import search_boards, get_all_boards
 
 api = BoardDto.namespace
 
@@ -194,21 +194,7 @@ class GetAllBoards(Resource):
     @api.marshal_with(BoardDto.board_search_response)
     @jwt_required
     def get(self):
-        stub = {
-            "search_result": [
-                {
-                    "id": 1,
-                    "name": "Joel's Board",
-                    "member_count": 10
-                },
-                {
-                    "id": 2,
-                    "name": "Slap City",
-                    "member_count": 10
-                },
-            ]
-        }
-        return stub
+        return get_all_boards()
 
 
 @api.route("/search/<board_name>")
@@ -219,18 +205,4 @@ class SearchBoards(Resource):
     @api.marshal_with(BoardDto.board_search_response)
     @jwt_required
     def get(self, board_name):
-        stub = {
-            "search_result": [
-                {
-                    "id": 1,
-                    "name": "Joel's Board",
-                    "member_count": 10
-                },
-                {
-                    "id": 2,
-                    "name": "Slap City",
-                    "member_count": 10
-                },
-            ]
-        }
-        return stub
+        return search_boards(board_name)
