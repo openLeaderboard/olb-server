@@ -1,9 +1,11 @@
 from flask import request
 from flask_restx import Resource
-from flask_jwt_extended import jwt_required
+from flask_jwt_extended import jwt_required, get_jwt_identity
 
 from ..models.user_dto import UserDto
-from ..services.user_service import create_user, search_users, get_all_users
+from ..services.user_service import create_user, search_users, get_all_users,\
+                                    get_normal_user_boards, get_admin_user_boards, get_favourite_user_boards,\
+                                    get_user_profile
 
 api = UserDto.namespace
 
@@ -16,35 +18,7 @@ class GetUserProfile(Resource):
     @api.marshal_with(UserDto.user_profile_response)
     @jwt_required
     def get(self, user_id):
-        stub = {
-            "user_id": 1,
-            "name": "Joel",
-            "board_count": 10,
-            "matches_count": 10,
-            "favourite_boards": [
-                {
-                    "board_name": "Slap City",
-                    "board_id": 1,
-                    "rank_icon": 1,
-                    "rank": 1,
-                    "users_count": 56,
-                    "rating": 1400.1,
-                    "wins": 10,
-                    "losses": 5
-                },
-                {
-                    "board_name": "Joel's Board",
-                    "board_id": 2,
-                    "rank_icon": 1,
-                    "rank": 2,
-                    "users_count": 56,
-                    "rating": 1200.4,
-                    "wins": 10,
-                    "losses": 5
-                },
-            ]
-        }
-        return stub
+        return get_user_profile(user_id)
 
 
 @api.route("/<user_id>/activity")
@@ -82,31 +56,10 @@ class GetUserBoards(Resource):
     @api.marshal_with(UserDto.user_boards_response)
     @jwt_required
     def get(self, user_id):
-        stub = {
-            "boards": [
-                {
-                    "board_name": "Slap City",
-                    "board_id": 1,
-                    "rank_icon": 1,
-                    "rank": 1,
-                    "users_count": 56,
-                    "rating": 1400.1,
-                    "wins": 10,
-                    "losses": 5
-                },
-                {
-                    "board_name": "Joel's Board",
-                    "board_id": 2,
-                    "rank_icon": 1,
-                    "rank": 2,
-                    "users_count": 56,
-                    "rating": 1200.4,
-                    "wins": 10,
-                    "losses": 5
-                },
-            ]
+        response = {
+            "boards": get_normal_user_boards(user_id)
         }
-        return stub
+        return response
 
 
 @api.route("/activity")
@@ -142,31 +95,11 @@ class GetMyBoards(Resource):
     @api.marshal_with(UserDto.user_boards_response)
     @jwt_required
     def get(self):
-        stub = {
-            "boards": [
-                {
-                    "board_name": "Slap City",
-                    "board_id": 1,
-                    "rank_icon": 1,
-                    "rank": 1,
-                    "users_count": 56,
-                    "rating": 1400.1,
-                    "wins": 10,
-                    "losses": 5
-                },
-                {
-                    "board_name": "Joel's Board",
-                    "board_id": 2,
-                    "rank_icon": 1,
-                    "rank": 2,
-                    "users_count": 56,
-                    "rating": 1200.4,
-                    "wins": 10,
-                    "losses": 5
-                },
-            ]
+        user_id = get_jwt_identity()
+        response = {
+            "boards": get_normal_user_boards(user_id)
         }
-        return stub
+        return response
 
 
 @api.route("/boards/mine")
@@ -176,31 +109,11 @@ class GetMyCreatedBoards(Resource):
     @api.marshal_with(UserDto.user_boards_response)
     @jwt_required
     def get(self):
-        stub = {
-            "boards": [
-                {
-                    "board_name": "Slap City",
-                    "board_id": 1,
-                    "rank_icon": 1,
-                    "rank": 1,
-                    "users_count": 56,
-                    "rating": 1400.1,
-                    "wins": 10,
-                    "losses": 5
-                },
-                {
-                    "board_name": "Joel's Board",
-                    "board_id": 2,
-                    "rank_icon": 1,
-                    "rank": 2,
-                    "users_count": 56,
-                    "rating": 1200.4,
-                    "wins": 10,
-                    "losses": 5
-                },
-            ]
+        user_id = get_jwt_identity()
+        response = {
+            "boards": get_admin_user_boards(user_id)
         }
-        return stub
+        return response
 
 
 @api.route("/boards/favourites")
@@ -210,31 +123,11 @@ class GetMyFavouriteBoards(Resource):
     @api.marshal_with(UserDto.user_boards_response)
     @jwt_required
     def get(self):
-        stub = {
-            "boards": [
-                {
-                    "board_name": "Slap City",
-                    "board_id": 1,
-                    "rank_icon": 1,
-                    "rank": 1,
-                    "users_count": 56,
-                    "rating": 1400.1,
-                    "wins": 10,
-                    "losses": 5
-                },
-                {
-                    "board_name": "Joel's Board",
-                    "board_id": 2,
-                    "rank_icon": 1,
-                    "rank": 2,
-                    "users_count": 56,
-                    "rating": 1200.4,
-                    "wins": 10,
-                    "losses": 5
-                },
-            ]
+        user_id = get_jwt_identity()
+        response = {
+            "boards": get_favourite_user_boards(user_id)
         }
-        return stub
+        return response
 
 
 @api.route("/boards/notfavourites")
@@ -294,35 +187,8 @@ class GetMyProfile(Resource):
     @api.marshal_with(UserDto.user_profile_response)
     @jwt_required
     def get(self):
-        stub = {
-            "user_id": 1,
-            "name": "Joel",
-            "board_count": 10,
-            "matches_count": 10,
-            "favourite_boards": [
-                {
-                    "board_name": "Slap City",
-                    "board_id": 1,
-                    "rank_icon": 1,
-                    "rank": 1,
-                    "users_count": 56,
-                    "rating": 1400.1,
-                    "wins": 10,
-                    "losses": 5
-                },
-                {
-                    "board_name": "Joel's Board",
-                    "board_id": 2,
-                    "rank_icon": 1,
-                    "rank": 2,
-                    "users_count": 56,
-                    "rating": 1200.4,
-                    "wins": 10,
-                    "losses": 5
-                },
-            ]
-        }
-        return stub
+        user_id = get_jwt_identity()
+        return get_user_profile(user_id)
 
 
 @api.route("/register")
@@ -343,7 +209,10 @@ class GetAllUsers(Resource):
     @api.marshal_with(UserDto.user_search_response)
     @jwt_required
     def get(self):
-        return get_all_users()
+        response = {
+            "search_result": get_all_users()
+        }
+        return response
 
 
 @api.route("/search/<username>")
@@ -354,4 +223,7 @@ class SearchUsers(Resource):
     @api.marshal_with(UserDto.user_search_response)
     @jwt_required
     def get(self, username):
-        return search_users(username)
+        response = {
+            "search_result": search_users(username)
+        }
+        return response

@@ -1,0 +1,13 @@
+version: '3'
+services:
+  postgres:
+    image: postgres:12.4
+    ports:
+      - 5432:5432
+    volumes:
+      - postgres:/var/lib/postgresql/data
+    restart: always
+    environment:
+      POSTGRES_PASSWORD: example
+volumes:
+  postgres:

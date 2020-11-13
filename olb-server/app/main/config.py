@@ -17,7 +17,8 @@ class Config:
 # App config for dev version
 class Dev_Config(Config):
     DEBUG = True
-    SQLALCHEMY_DATABASE_URI = f"sqlite:///{os.path.join(base_directory, 'olb_dev.db')}"
+    # SQLALCHEMY_DATABASE_URI = f"sqlite:///{os.path.join(base_directory, 'olb_dev.db')}"
+    SQLALCHEMY_DATABASE_URI = "postgresql+psycopg2://postgres:example@localhost:5432/olb_dev"
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
 
