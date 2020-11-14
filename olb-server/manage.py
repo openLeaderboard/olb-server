@@ -2,6 +2,7 @@ import os
 
 from flask_migrate import Migrate, MigrateCommand
 from flask_script import Manager
+from sqlalchemy_utils import database_exists, create_database, drop_database
 
 from app.main import create_app, db, jwt
 from app.main.models.db_models import blacklist_token, board_invite, board, match, user_board, user # noqa F401 -- needs to be here so manager will recognize changes for migrations
@@ -29,6 +30,17 @@ manager.add_command("db", MigrateCommand)
 def run():
     print(f"Starting openLeaderboard api server in {app_env} mode")
     app.run()
+
+
+# runs resets/creates the postgres db
+@manager.command
+def reset_db():
+    if database_exists(app.config["SQLALCHEMY_DATABASE_URI"]):
+        print("Deleting database.")
+        drop_database(app.config["SQLALCHEMY_DATABASE_URI"])
+    if not database_exists(app.config["SQLALCHEMY_DATABASE_URI"]):
+        print("Creating database.")
+        create_database(app.config["SQLALCHEMY_DATABASE_URI"])
 
 
 # runs unit tests

@@ -19,7 +19,7 @@ class GetBoard(Resource):
         stub = {
             "board_id": 1,
             "board_name": "Slap City",
-            "public": True,
+            "is_public": True,
             "member_count": 10,
             "matches_count": 10,
             "top_members": [

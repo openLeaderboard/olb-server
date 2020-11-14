@@ -7,7 +7,9 @@ base_directory = os.path.abspath(os.path.dirname(__file__))
 
 # Default config class
 class Config:
-    JWT_SECRET_KEY = os.getenv("OLB_SECRET_KEY", "joel is great")  # secret key for jwt encoding, set this in environment variables
+    JWT_SECRET_KEY = os.getenv(
+        "OLB_SECRET_KEY", "joel is great"
+    )  # secret key for jwt encoding, set this in environment variables
     JWT_ACCESS_TOKEN_EXPIRES = False  # Access tokens don't expire, change this before monetizing this program lmao
     JWT_BLACKLIST_ENABLED = True
     JWT_BLACKLIST_TOKEN_CHECKS = ["access"]
@@ -17,7 +19,8 @@ class Config:
 # App config for dev version
 class Dev_Config(Config):
     DEBUG = True
-    SQLALCHEMY_DATABASE_URI = f"sqlite:///{os.path.join(base_directory, 'olb_dev.db')}"
+    # SQLALCHEMY_DATABASE_URI = f"sqlite:///{os.path.join(base_directory, 'olb_dev.db')}"
+    SQLALCHEMY_DATABASE_URI = "postgresql+psycopg2://postgres:example@localhost:5432/olb_dev"
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
 
@@ -36,8 +39,4 @@ class Prod_Config(Config):
     # set the sqlalchemy uri to a postgres or mysql or whatever
 
 
-configs = dict(
-    dev=Dev_Config,
-    test=Test_Config,
-    prod=Prod_Config
-)
+configs = dict(dev=Dev_Config, test=Test_Config, prod=Prod_Config)
