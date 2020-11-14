@@ -22,7 +22,7 @@ class BoardDto:
         {
             "board_id": fields.Integer(required=True, description="Id of the board being returned"),
             "board_name": fields.String(required=True, description="board's name"),
-            "public": fields.Boolean(required=True, description="Whether or not this is a public board"),
+            "is_public": fields.Boolean(required=True, description="Whether or not this is a public board"),
             "member_count": fields.Integer(required=True, description="Number of board members"),
             "matches_count": fields.Integer(required=True, description="Number of verified matches on this board"),
             "top_members": fields.List(fields.Nested(board_user)),
@@ -85,7 +85,7 @@ class BoardDto:
         "edit_board",
         {
             "board_name": fields.String(required=True, description="The new name of the board"),
-            "public": fields.Boolean(required=True, description="Whether or not this is a public board"),
+            "is_public": fields.Boolean(required=True, description="Whether or not this is a public board"),
         },
     )
 

@@ -104,7 +104,7 @@ def get_user_activity(user_id):
         .filter(
             and_(
                 or_(Match.from_user_id == user_id, Match.to_user_id == user_id),
-                Match.verified,
+                Match.is_verified,
             )
         )
         .order_by(Match.id.desc())
@@ -125,7 +125,7 @@ def get_user_profile(user_id):
         db.func.count()
         .filter(
             and_(
-                Match.verified,
+                Match.is_verified,
                 or_(Match.from_user_id == user_id, Match.to_user_id == user_id),
             )
         )
@@ -203,11 +203,11 @@ def get_user_boards(user_id, query_type):
             ranked_boards_sq.c.rating,
             ranked_boards_sq.c.users_count,
             db.func.count()
-            .filter(and_(Match.winner_user_id == user_id, Match.verified))
+            .filter(and_(Match.winner_user_id == user_id, Match.is_verified))
             .over(partition_by=ranked_boards_sq.c.board_id)
             .label("wins"),
             db.func.count()
-            .filter(and_(Match.winner_user_id != user_id, Match.verified))
+            .filter(and_(Match.winner_user_id != user_id, Match.is_verified))
             .over(partition_by=ranked_boards_sq.c.board_id)
             .label("losses"),
         )

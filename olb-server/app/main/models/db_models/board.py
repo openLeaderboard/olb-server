@@ -9,7 +9,7 @@ class Board(db.Model):
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     name = db.Column(db.String(50), nullable=False)
-    public = db.Column(db.Boolean, nullable=False, default=True)
+    is_public = db.Column(db.Boolean, nullable=False, default=True)
 
     user_boards = relationship("UserBoard", back_populates="board")
     board_invites = relationship("BoardInvite", back_populates="board")

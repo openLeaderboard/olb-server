@@ -80,7 +80,7 @@ class GetBoardInvite(Resource):
             "board_name": "Slap City",
             "board_id": 1,
             "member_count": 10,
-            "public": False,
+            "is_public": False,
             "from_name": "Paul Dan",
             "from_id": 4,
             "to_name": "Joel",
