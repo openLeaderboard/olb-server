@@ -7,7 +7,9 @@ base_directory = os.path.abspath(os.path.dirname(__file__))
 
 # Default config class
 class Config:
-    JWT_SECRET_KEY = os.getenv("OLB_SECRET_KEY", "joel is great")  # secret key for jwt encoding, set this in environment variables
+    JWT_SECRET_KEY = os.getenv(
+        "OLB_SECRET_KEY", "joel is great"
+    )  # secret key for jwt encoding, set this in environment variables
     JWT_ACCESS_TOKEN_EXPIRES = False  # Access tokens don't expire, change this before monetizing this program lmao
     JWT_BLACKLIST_ENABLED = True
     JWT_BLACKLIST_TOKEN_CHECKS = ["access"]
@@ -37,8 +39,4 @@ class Prod_Config(Config):
     # set the sqlalchemy uri to a postgres or mysql or whatever
 
 
-configs = dict(
-    dev=Dev_Config,
-    test=Test_Config,
-    prod=Prod_Config
-)
+configs = dict(dev=Dev_Config, test=Test_Config, prod=Prod_Config)

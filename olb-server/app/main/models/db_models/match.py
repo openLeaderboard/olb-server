@@ -12,7 +12,8 @@ class Match(db.Model):
     to_user_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
     board_id = db.Column(db.Integer, db.ForeignKey("board.id"), nullable=False)
     winner_user_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=True)
-    winner_rating_change = db.Column(db.Float, nullable=False)
+    from_user_rating_change = db.Column(db.Float, nullable=False)
+    to_user_rating_change = db.Column(db.Float, nullable=False)
     verified = db.Column(db.Boolean, nullable=False, default=False)
 
     from_user = relationship("User", backref="sent_match", foreign_keys=[from_user_id])

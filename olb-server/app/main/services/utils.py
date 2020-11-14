@@ -18,15 +18,15 @@ class RankIcon(Enum):
 
 
 def get_rank_icon(rank, total_members):
-    top_percentile = rank/total_members
+    top_percentile = rank / total_members
 
-    if(top_percentile > BRONZE_UPPER and top_percentile <= BRONZE_LOWER):
+    if top_percentile > BRONZE_UPPER and top_percentile <= BRONZE_LOWER:
         rank_icon = RankIcon.BRONZE
-    elif(top_percentile > SILVER_UPPER and top_percentile <= SILVER_LOWER):
+    elif top_percentile > SILVER_UPPER and top_percentile <= SILVER_LOWER:
         rank_icon = RankIcon.SILVER
-    elif(top_percentile > GOLD_UPPER and top_percentile <= GOLD_LOWER):
+    elif top_percentile > GOLD_UPPER and top_percentile <= GOLD_LOWER:
         rank_icon = RankIcon.GOLD
-    elif(top_percentile > PLATINUM_UPPER and top_percentile <= PLATINUM_LOWER):
+    elif top_percentile > PLATINUM_UPPER and top_percentile <= PLATINUM_LOWER:
         rank_icon = RankIcon.PLATINUM
     else:
         rank_icon = RankIcon.BRONZE

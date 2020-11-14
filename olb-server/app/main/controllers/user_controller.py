@@ -5,7 +5,7 @@ from flask_jwt_extended import jwt_required, get_jwt_identity
 from ..models.user_dto import UserDto
 from ..services.user_service import create_user, search_users, get_all_users,\
                                     get_normal_user_boards, get_admin_user_boards, get_favourite_user_boards,\
-                                    get_user_profile
+                                    get_user_profile, get_user_activity
 
 api = UserDto.namespace
 
@@ -29,23 +29,10 @@ class GetUserActivity(Resource):
     @api.marshal_with(UserDto.user_activity_response)
     @jwt_required
     def get(self, user_id):
-        stub = {
-            "matches": [
-                {
-                    "board_name": "Slap City",
-                    "opponent_name": "Joel",
-                    "rating_change": 14.1,
-                    "result": "Win"
-                },
-                {
-                    "board_name": "Joel's Board",
-                    "opponent_name": "Parker",
-                    "rating_change": -12.2,
-                    "result": "Loss"
-                },
-            ]
+        response = {
+            "matches": get_user_activity(user_id)
         }
-        return stub
+        return response
 
 
 @api.route("/<user_id>/boards")
@@ -69,23 +56,11 @@ class GetMyActivity(Resource):
     @api.marshal_with(UserDto.user_activity_response)
     @jwt_required
     def get(self):
-        stub = {
-            "matches": [
-                {
-                    "board_name": "Slap City",
-                    "opponent_name": "Joel",
-                    "rating_change": 14.1,
-                    "result": "Win"
-                },
-                {
-                    "board_name": "Joel's Board",
-                    "opponent_name": "Parker",
-                    "rating_change": -12.2,
-                    "result": "Loss"
-                },
-            ]
+        user_id = get_jwt_identity()
+        response = {
+            "matches": get_user_activity(user_id)
         }
-        return stub
+        return response
 
 
 @api.route("/boards")
