@@ -3,7 +3,8 @@ from flask_restx import Resource
 from flask_jwt_extended import jwt_required
 
 from ..models.board_dto import BoardDto
-from ..services.board_service import search_boards, get_all_boards, get_board_activity
+from ..services.board_service import search_boards, get_all_boards, get_board_activity, get_normal_board_users,\
+                                     get_board_profile
 
 api = BoardDto.namespace
 
@@ -16,34 +17,7 @@ class GetBoard(Resource):
     @api.marshal_with(BoardDto.board_profile_response)
     @jwt_required
     def get(self, board_id):
-        stub = {
-            "board_id": 1,
-            "board_name": "Slap City",
-            "is_public": True,
-            "member_count": 10,
-            "matches_count": 10,
-            "top_members": [
-                {
-                    "name": "Joel",
-                    "user_id": 1,
-                    "rank_icon": 1,
-                    "rank": 1,
-                    "rating": 1400.1,
-                    "wins": 10,
-                    "losses": 5
-                },
-                {
-                    "name": "Parker",
-                    "user_id": 1,
-                    "rank_icon": 1,
-                    "rank": 2,
-                    "rating": 1200.3,
-                    "wins": 10,
-                    "losses": 5
-                }
-            ]
-        }
-        return stub
+        return get_board_profile(board_id)
 
 
 @api.route("/<board_id>/activity")
@@ -68,29 +42,10 @@ class GetBoardMembers(Resource):
     @api.marshal_with(BoardDto.board_members_response)
     @jwt_required
     def get(self, board_id):
-        stub = {
-            "members": [
-                {
-                    "name": "Joel",
-                    "user_id": 1,
-                    "rank_icon": 1,
-                    "rank": 1,
-                    "rating": 1400.1,
-                    "wins": 10,
-                    "losses": 5
-                },
-                {
-                    "name": "Parker",
-                    "user_id": 1,
-                    "rank_icon": 1,
-                    "rank": 2,
-                    "rating": 1200.3,
-                    "wins": 10,
-                    "losses": 5
-                }
-            ]
+        response = {
+            "members": get_normal_board_users(board_id)
         }
-        return stub
+        return response
 
 
 @api.route("/create")
