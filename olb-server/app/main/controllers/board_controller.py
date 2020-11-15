@@ -3,7 +3,7 @@ from flask_restx import Resource
 from flask_jwt_extended import jwt_required
 
 from ..models.board_dto import BoardDto
-from ..services.board_service import search_boards, get_all_boards
+from ..services.board_service import search_boards, get_all_boards, get_board_activity
 
 api = BoardDto.namespace
 
@@ -54,23 +54,10 @@ class GetBoardActivity(Resource):
     @api.marshal_with(BoardDto.board_activity_response)
     @jwt_required
     def get(self, board_id):
-        stub = {
-            "matches": [
-                {
-                    "submitter_name": "Joel",
-                    "receiver_name": "Parker",
-                    "submitter_result": "Win",
-                    "receiver_result": "Loss"
-                },
-                {
-                    "submitter_name": "Jason",
-                    "receiver_name": "Parker",
-                    "submitter_result": "Win",
-                    "receiver_result": "Loss"
-                }
-            ]
+        response = {
+            "matches": get_board_activity(board_id)
         }
-        return stub
+        return response
 
 
 @api.route("/<board_id>/members")
@@ -194,7 +181,10 @@ class GetAllBoards(Resource):
     @api.marshal_with(BoardDto.board_search_response)
     @jwt_required
     def get(self):
-        return get_all_boards()
+        response = {
+            "search_result": get_all_boards()
+        }
+        return response
 
 
 @api.route("/search/<board_name>")
@@ -205,4 +195,7 @@ class SearchBoards(Resource):
     @api.marshal_with(BoardDto.board_search_response)
     @jwt_required
     def get(self, board_name):
-        return search_boards(board_name)
+        response = {
+            "search_result": search_boards(board_name)
+        }
+        return response
