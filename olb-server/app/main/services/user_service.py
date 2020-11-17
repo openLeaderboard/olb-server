@@ -31,7 +31,10 @@ def create_user(user_data):
             "access_token": f"Bearer {jwt}",
         }
     else:
-        response = {"success": False, "message": "Email already in use."}
+        response = {
+            "success": False,
+            "message": "Email already in use.",
+        }
 
     return response
 

@@ -1,12 +1,13 @@
 from sqlalchemy import and_, or_
 from enum import Enum
+from flask_jwt_extended import get_jwt_identity
 
 from app.main import db
 from app.main.models.db_models.board import Board
 from app.main.models.db_models.user_board import UserBoard
-
 from app.main.models.db_models.match import Match
 from app.main.models.db_models.user import User
+from app.main.models.db_models.board_invite import BoardInvite
 
 from .utils import get_rank_icon
 
@@ -179,6 +180,241 @@ def get_board_profile(board_id):
     board_profile_dict["top_members"] = get_top_board_users(board_id)
 
     return board_profile_dict
+
+
+# creates a new board
+def create_board(create_board_data):
+    creator_id = get_jwt_identity()
+
+    try:
+        new_board = Board(name=create_board_data["board_name"], is_public=create_board_data["is_public"])
+        db.session.add(new_board)
+        db.session.flush()
+
+        new_user_board = UserBoard(
+            board_id=new_board.id,
+            user_id=creator_id,
+            is_admin=True,
+        )
+        db.session.add(new_user_board)
+        db.session.commit()
+
+        response = {
+            "success": True,
+            "message": "Board successfully created",
+            "board_id": new_user_board.board_id,
+        }
+    except Exception as e:
+        print(e)  # TODO error logging
+        db.session.rollback()
+
+        response = {
+            "success": False,
+            "message": "Error creating board",
+            "board_id": 0,
+        }
+
+    return response
+
+
+# edits an existing board
+def edit_board(edit_board_data):
+    user_id = get_jwt_identity()
+
+    user_board = UserBoard.query.filter_by(board_id=edit_board_data["board_id"], user_id=user_id, is_admin=True).first()
+
+    if not user_board:
+        return {
+            "success": False,
+            "message": "You do not have permissions to edit this board",
+        }
+
+    try:
+        edit_board = Board.query.filter_by(id=user_board.board_id).first()
+        edit_board.name = edit_board_data["board_name"]
+        edit_board.is_public = edit_board_data["is_public"]
+        db.session.add(edit_board)
+        db.session.commit()
+    except Exception as e:
+        print(e)  # TODO logging
+        db.session.rollback()
+
+        return {
+            "success": False,
+            "message": "Error editing board",
+        }
+
+    return {
+        "success": True,
+        "message": "Board successfully updated",
+    }
+
+
+# invite a user to a board (admin only)
+def invite_to_board(invite_data):
+    inviter_user_id = get_jwt_identity()
+    invitee_user_id = invite_data["user_id"]
+    board_id = invite_data["board_id"]
+
+    inviter_user_board = UserBoard.query.filter_by(board_id=board_id, user_id=inviter_user_id, is_admin=True).first()
+    if not inviter_user_board:
+        return {
+            "success": False,
+            "message": "You do not have permissions to invite to this board",
+        }
+
+    invitee_user_board = UserBoard.query.filter_by(board_id=board_id, user_id=invitee_user_id).first()
+    if invitee_user_board and invitee_user_board.is_active:
+        return {
+            "success": False,
+            "message": "User is already a member of this board",
+        }
+
+    invite_exists = BoardInvite.query.filter_by(board_id=board_id, to_user_id=invitee_user_id).first()
+    if invite_exists:
+        return {
+            "success": False,
+            "message": "User has already been invited to this board",
+        }
+
+    try:
+        new_invite = BoardInvite(board_id=board_id, to_user_id=invitee_user_id, from_user_id=inviter_user_id)
+        db.session.add(new_invite)
+        db.session.commit()
+    except Exception as e:
+        print(e)  # TODO logging
+        db.session.rollback()
+
+        return {
+            "success": False,
+            "message": "Error creating invite",
+        }
+
+    return {
+        "success": True,
+        "message": "User successfully invited",
+    }
+
+
+# join a board
+def join_board(join_data):
+    user_id = get_jwt_identity()
+    board_id = join_data["board_id"]
+
+    public_board = Board.query.filter_by(id=board_id, is_public=True).first()
+    if not public_board:
+        return {
+            "success": False,
+            "message": "You do not have permission to join this board",
+        }
+
+    user_member = UserBoard.query.filter_by(board_id=board_id, user_id=user_id).first()
+    try:
+        if user_member:
+            if user_member.is_active:
+                return {
+                    "success": False,
+                    "message": "You're already a member of this board",
+                }
+
+            user_member.is_active = True
+            db.session.add(user_member)
+            db.session.commit()
+        else:
+            new_member = UserBoard(board_id=board_id, user_id=user_id)
+            db.session.add(new_member)
+            db.session.commit()
+    except Exception as e:
+        print(e)  # TODO logging
+        db.session.rollback()
+
+        return {
+            "success": False,
+            "message": "Error joining board",
+        }
+
+    return {
+        "success": True,
+        "message": "Successfully joined board",
+    }
+
+
+# leave a board
+def leave_board(leave_data):
+    user_id = get_jwt_identity()
+    board_id = leave_data["board_id"]
+
+    user_board = UserBoard.query.filter_by(board_id=board_id, user_id=user_id).first()
+    if user_board:
+        if user_board.is_admin:
+            return {
+                "success": False,
+                "message": "You cannot leave a board you created",
+            }
+
+        try:
+            user_board.is_active = False
+            db.session.add(user_board)
+            db.session.commit()
+        except Exception as e:
+            print(e)  # TODO logging
+            db.session.rollback()
+
+            return {
+                "success": False,
+                "message": "Error leaving board",
+            }
+
+    return {
+        "success": True,
+        "message": "Successfully left board",
+    }
+
+
+# remove someone from a board
+def remove_from_board(remove_data):
+    remover_user_id = get_jwt_identity()
+    removee_user_id = remove_data["user_id"]
+    board_id = remove_data["board_id"]
+
+    if remover_user_id == removee_user_id:
+        return {
+            "success": False,
+            "message": "You cannot remove yourself from a board",
+        }
+
+    remover_user_board = UserBoard.query.filter_by(board_id=board_id, user_id=remover_user_id, is_admin=True).first()
+    if not remover_user_board:
+        return {
+            "success": False,
+            "message": "You do not have permissions to remove players from this board",
+        }
+
+    removee_user_board = UserBoard.query.filter_by(board_id=board_id, user_id=removee_user_id).first()
+    if removee_user_board:
+        if removee_user_board.is_admin:
+            return {
+                "success": False,
+                "message": "You cannot remove an admin from a board",
+            }
+
+        try:
+            removee_user_board.is_active = False
+            db.session.add(removee_user_board)
+            db.session.commit()
+        except Exception as e:
+            print(e)  # TODO logging
+            db.session.rollback()
+
+            return {
+                "success": False,
+                "message": "Error removing user from board",
+            }
+
+    return {
+        "success": True,
+        "message": "Successfully removed user from board",
+    }
 
 
 # converts the given query result to a dict and computes its rank icon
