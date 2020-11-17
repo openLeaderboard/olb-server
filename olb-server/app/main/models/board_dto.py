@@ -86,6 +86,7 @@ class BoardDto:
         {
             "board_name": fields.String(required=True, description="The new name of the board"),
             "is_public": fields.Boolean(required=True, description="Whether or not this is a public board"),
+            "board_id": fields.Integer(required=True, description="Id of the board being edited"),
         },
     )
 
