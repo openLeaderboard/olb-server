@@ -162,7 +162,13 @@ def get_match(match_id):
         .join(to_user, Match.to_user_id == to_user.id)
         .join(from_user, Match.from_user_id == from_user.id)
         .join(Board, Match.board_id == Board.id)
-        .filter(and_(Match.id == match_id, ~Match.is_verified, or_(Match.to_user_id == user_id, BoardInvite.from_user_id == user_id)))
+        .filter(
+            and_(
+                Match.id == match_id,
+                ~Match.is_verified,
+                or_(Match.to_user_id == user_id, BoardInvite.from_user_id == user_id),
+            )
+        )
         .first()
     )
 
@@ -172,3 +178,69 @@ def get_match(match_id):
     match_dict = match._asdict()
 
     return match_dict
+
+
+# accept, decline, or cancel an invite
+def accept_decline_invite(invite_data):
+    user_id = get_jwt_identity()
+    invite_id = invite_data["invite_id"]
+    accept = invite_data["accept"]
+
+    invite = (
+        db.session.query(BoardInvite)
+        .filter(
+            BoardInvite.id == invite_id, or_(BoardInvite.from_user_id == user_id, BoardInvite.to_user_id == user_id)
+        )
+        .first()
+    )
+
+    if not invite:
+        return {
+            "success": False,
+            "message": "You do not have permission to interact with this invite",
+        }
+
+    try:
+        if user_id == invite.from_user_id or not accept:
+            db.session.delete(invite)
+            db.session.commit()
+
+            return {
+                "success": True,
+                "message": "Successfully cancelled invite"
+                if user_id == invite.from_user_id
+                else "Successfully declined invite",
+            }
+
+        invitee_user_board = UserBoard.query.filter_by(board_id=invite.board_id, user_id=invite.to_user_id).first()
+        if invitee_user_board:
+            if invitee_user_board.is_active:
+                db.session.delete(invite)
+                db.session.commit()
+
+                return {
+                    "success": False,
+                    "message": "You are already a member of this board",
+                }
+
+            invitee_user_board.is_active = True
+            db.session.add(invitee_user_board)
+        else:
+            new_user_board = UserBoard(board_id=invite.board_id, user_id=invite.to_user_id)
+            db.session.add(new_user_board)
+
+        db.session.delete(invite)
+        db.session.commit()
+    except Exception as e:
+        print(e)  # TODO logging
+        db.session.rollback()
+
+        return {
+            "success": False,
+            "message": "Error occurred accepting invite",
+        }
+
+    return {
+        "success": True,
+        "message": "Successfully accepted board invite",
+    }

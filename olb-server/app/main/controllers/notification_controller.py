@@ -9,7 +9,8 @@ from ..services.notification_service import (
     get_incoming_matches,
     get_outgoing_matches,
     get_invite,
-    get_match
+    get_match,
+    accept_decline_invite,
 )
 
 api = NotificationDto.namespace
@@ -48,12 +49,8 @@ class AcceptDeclineCancelBoardInvite(Resource):
     @api.marshal_with(NotificationDto.accept_decline_invite_response)
     @jwt_required
     def post(self):
-        user_data = request.json
-        stub = {
-            "success": True,
-            "message": "Successfully accepted board invite",
-        }
-        return stub
+        invite_data = request.json
+        return accept_decline_invite(invite_data)
 
 
 @api.route("/invite/<invite_id>")
@@ -114,16 +111,4 @@ class GetSubmission(Resource):
     @api.marshal_with(NotificationDto.submission_response)
     @jwt_required
     def get(self, match_id):
-        # stub = {
-        #     "board_name": "Slap City",
-        #     "board_id": 1,
-        #     "result": "Win",
-        #     "rating_change": 12.2,
-        #     "from_name": "Paul Dan",
-        #     "from_id": 4,
-        #     "to_name": "Joel",
-        #     "to_id": 1,
-        #     "match_id": 1,
-        # }
-        # return stub
         return get_match(match_id)
