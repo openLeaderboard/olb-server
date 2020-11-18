@@ -256,6 +256,12 @@ def invite_to_board(invite_data):
     invitee_user_id = invite_data["user_id"]
     board_id = invite_data["board_id"]
 
+    if inviter_user_id == invitee_user_id:
+        return {
+            "success": False,
+            "message": "You cannot invite yourself to a board",
+        }
+
     inviter_user_board = UserBoard.query.filter_by(board_id=board_id, user_id=inviter_user_id, is_admin=True).first()
     if not inviter_user_board:
         return {
