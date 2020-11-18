@@ -8,6 +8,8 @@ from ..services.notification_service import (
     get_outgoing_invites,
     get_incoming_matches,
     get_outgoing_matches,
+    get_invite,
+    get_match
 )
 
 api = NotificationDto.namespace
@@ -61,18 +63,7 @@ class GetBoardInvite(Resource):
     @api.marshal_with(NotificationDto.invite_response)
     @jwt_required
     def get(self, invite_id):
-        stub = {
-            "board_name": "Slap City",
-            "board_id": 1,
-            "member_count": 10,
-            "is_public": False,
-            "from_name": "Paul Dan",
-            "from_id": 4,
-            "to_name": "Joel",
-            "to_id": 1,
-            "invite_id": 1,
-        }
-        return stub
+        return get_invite(invite_id)
 
 
 @api.route("/outgoing/invites")
@@ -123,15 +114,16 @@ class GetSubmission(Resource):
     @api.marshal_with(NotificationDto.submission_response)
     @jwt_required
     def get(self, match_id):
-        stub = {
-            "board_name": "Slap City",
-            "board_id": 1,
-            "result": "Win",
-            "rating_change": 12.2,
-            "from_name": "Paul Dan",
-            "from_id": 4,
-            "to_name": "Joel",
-            "to_id": 1,
-            "match_id": 1,
-        }
-        return stub
+        # stub = {
+        #     "board_name": "Slap City",
+        #     "board_id": 1,
+        #     "result": "Win",
+        #     "rating_change": 12.2,
+        #     "from_name": "Paul Dan",
+        #     "from_id": 4,
+        #     "to_name": "Joel",
+        #     "to_id": 1,
+        #     "match_id": 1,
+        # }
+        # return stub
+        return get_match(match_id)
