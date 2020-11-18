@@ -57,7 +57,7 @@ class NotificationDto:
         {
             "board_id": fields.Integer(required=True, description="Id of the invite's board"),
             "board_name": fields.String(required=True, description="board's name"),
-            "public": fields.Boolean(required=True, description="Whether or not this is a public board"),
+            "is_public": fields.Boolean(required=True, description="Whether or not this is a public board"),
             "member_count": fields.Integer(required=True, description="Number of board members"),
             "from_id": fields.Integer(required=True, description="Id of the receiving user"),
             "from_name": fields.String(required=True, description="receiving User's username"),
@@ -73,7 +73,7 @@ class NotificationDto:
             "board_id": fields.Integer(required=True, description="Id of the invite's board"),
             "board_name": fields.String(required=True, description="board's name"),
             "result": fields.String(required=True, description="result of match {'Win', 'Loss', 'Draw'}"),
-            "rating change": fields.Float(required=True, description="change to the user's rating from this match"),
+            "rating_change": fields.Float(required=True, description="change to the user's rating from this match"),
             "from_id": fields.Integer(required=True, description="Id of the receiving user"),
             "from_name": fields.String(required=True, description="receiving User's username"),
             "to_id": fields.Integer(required=True, description="Id of the sending user"),
