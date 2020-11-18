@@ -11,6 +11,7 @@ from ..services.notification_service import (
     get_invite,
     get_match,
     accept_decline_invite,
+    accept_decline_match,
 )
 
 api = NotificationDto.namespace
@@ -96,12 +97,8 @@ class AcceptDeclineCancelSubmission(Resource):
     @api.marshal_with(NotificationDto.accept_decline_submission_response)
     @jwt_required
     def post(self):
-        user_data = request.json
-        stub = {
-            "success": True,
-            "message": "Successfully verified match",
-        }
-        return stub
+        match_data = request.json
+        return accept_decline_match(match_data)
 
 
 @api.route("/submission/<match_id>")

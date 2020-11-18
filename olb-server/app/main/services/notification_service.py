@@ -183,7 +183,7 @@ def get_match(match_id):
 # accept, decline, or cancel an invite
 def accept_decline_invite(invite_data):
     user_id = get_jwt_identity()
-    invite_id = invite_data["invite_id"]
+    invite_id = invite_data["match_id"]
     accept = invite_data["accept"]
 
     invite = (
@@ -237,10 +237,75 @@ def accept_decline_invite(invite_data):
 
         return {
             "success": False,
-            "message": "Error occurred accepting invite",
+            "message": "Error occurred accepting/declining invite",
         }
 
     return {
         "success": True,
         "message": "Successfully accepted board invite",
+    }
+
+
+# accept, decline, or cancel a match
+def accept_decline_match(match_data):
+    user_id = get_jwt_identity()
+    match_id = match_data["match_id"]
+    accept = match_data["accept"]
+
+    match = (
+        db.session.query(Match)
+        .filter(Match.id == match_id, ~Match.is_verified, or_(Match.from_user_id == user_id, Match.to_user_id == user_id))
+        .first()
+    )
+
+    if not match:
+        return {
+            "success": False,
+            "message": "You do not have permission to interact with this match submission",
+        }
+
+    try:
+        if user_id == match.from_user_id or not accept:
+            db.session.delete(match)
+            db.session.commit()
+
+            return {
+                "success": True,
+                "message": "Successfully cancelled match submission"
+                if user_id == match.from_user_id
+                else "Successfully declined match submission",
+            }
+
+        to_user_board = UserBoard.query.filter_by(board_id=match.board_id, user_id=match.to_user_id).first()
+        from_user_board = UserBoard.query.filter_by(board_id=match.board_id, user_id=match.from_user_id).first()
+
+        if not (to_user_board and from_user_board):
+            db.session.delete(match)
+            db.session.commit()
+
+            return {
+                "success": False,
+                "message": "Could not verify match - one or both users are not members of the board",
+            }
+
+        to_user_board.rating += match.to_user_rating_change
+        from_user_board.rating += match.from_user_rating_change
+        match.is_verified = True
+
+        db.session.add(to_user_board)
+        db.session.add(from_user_board)
+        db.session.add(match)
+        db.session.commit()
+    except Exception as e:
+        print(e)  # TODO logging
+        db.session.rollback()
+
+        return {
+            "success": False,
+            "message": "Error occurred accepting/declining match submission",
+        }
+
+    return {
+        "success": True,
+        "message": "Successfully verified match submission",
     }
