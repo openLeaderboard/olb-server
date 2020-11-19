@@ -1,6 +1,7 @@
 from flask_jwt_extended import create_access_token
 from enum import Enum
 from sqlalchemy import and_, or_, desc
+from validate_email import validate_email
 
 from app.main import db
 from app.main.models.db_models.user import User
@@ -13,8 +14,13 @@ from .utils import get_rank_icon
 
 # Creates a new user, returns error if email already in use
 def create_user(user_data):
-    user_exists = User.query.filter_by(email=user_data["email"]).first()
+    if not validate_email(user_data["email"]):
+        return {
+            "success": False,
+            "message": "Invalid email",
+        }
 
+    user_exists = User.query.filter_by(email=user_data["email"]).first()
     if not user_exists:
         new_user = User(
             email=user_data["email"],
