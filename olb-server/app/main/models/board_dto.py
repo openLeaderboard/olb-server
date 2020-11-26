@@ -23,6 +23,8 @@ class BoardDto:
             "board_id": fields.Integer(required=True, description="Id of the board being returned"),
             "board_name": fields.String(required=True, description="board's name"),
             "is_public": fields.Boolean(required=True, description="Whether or not this is a public board"),
+            "is_admin": fields.Boolean(required=True, description="Whether or not the logged in user is an admin of the board"),
+            "is_member": fields.Boolean(required=True, description="Whether or not the logged in user is a member of the board"),
             "member_count": fields.Integer(required=True, description="Number of board members"),
             "matches_count": fields.Integer(required=True, description="Number of verified matches on this board"),
             "top_members": fields.List(fields.Nested(board_user)),

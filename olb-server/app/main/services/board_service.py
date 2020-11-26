@@ -155,7 +155,7 @@ def get_board_users(board_id, query_type):
 
 
 # gets a board's profile
-def get_board_profile(board_id):
+def get_board_profile(board_id, user_id):
     member_count_sq = db.session.query(
         db.func.count().filter(and_(UserBoard.board_id == board_id, UserBoard.is_active)).label("member_count")
     ).subquery()
@@ -163,6 +163,15 @@ def get_board_profile(board_id):
     match_count_sq = db.session.query(
         db.func.count().filter(and_(Match.is_verified, Match.board_id == board_id)).label("matches_count")
     ).subquery()
+
+    board_membership_query = (
+        db.session.query(
+            UserBoard.is_admin,
+            UserBoard.is_active,
+        )
+        .filter(UserBoard.board_id == board_id, UserBoard.user_id == user_id)
+        .first()
+    )
 
     profile = (
         db.session.query(
@@ -178,6 +187,13 @@ def get_board_profile(board_id):
 
     board_profile_dict = profile._asdict()
     board_profile_dict["top_members"] = get_top_board_users(board_id)
+
+    if board_membership_query:
+        board_profile_dict["is_admin"] = board_membership_query.is_admin
+        board_profile_dict["is_member"] = board_membership_query.is_active
+    else:
+        board_profile_dict["is_admin"] = False
+        board_profile_dict["is_member"] = False
 
     return board_profile_dict
 

@@ -1,6 +1,6 @@
 from flask import request
 from flask_restx import Resource
-from flask_jwt_extended import jwt_required
+from flask_jwt_extended import jwt_required, get_jwt_identity
 
 from ..models.board_dto import BoardDto
 from ..services.board_service import (
@@ -27,7 +27,8 @@ class GetBoard(Resource):
     @api.marshal_with(BoardDto.board_profile_response)
     @jwt_required
     def get(self, board_id):
-        return get_board_profile(board_id)
+        user_id = get_jwt_identity()
+        return get_board_profile(board_id, user_id)
 
 
 @api.route("/<board_id>/activity")
