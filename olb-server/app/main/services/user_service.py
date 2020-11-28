@@ -85,6 +85,14 @@ def get_all_users():
 
 # gets a list of all users not in the specified board id
 def get_all_users_not_in_board(board_id):
+    in_board_sq = (
+        db.session.query(
+            UserBoard.user_id.label("id")
+        )
+        .filter(UserBoard.board_id == board_id, UserBoard.is_active)
+        .subquery()
+    )
+
     users = (
         db.session.query(
             User.name.label("name"),
@@ -94,12 +102,7 @@ def get_all_users_not_in_board(board_id):
         .outerjoin(UserBoard)
         .group_by(User.id)
         .order_by(desc("board_count"))
-        .filter(
-            or_(
-                not_(and_(UserBoard.board_id == board_id, UserBoard.is_active)),
-                UserBoard.board_id == None,  # noqa E711 -- SQLAlchemy doesn't support "is None"
-            )
-        )
+        .filter(not_(User.id.in_(in_board_sq)))
     )
 
     users_dict = list(map(lambda user: user._asdict(), users))
@@ -109,6 +112,14 @@ def get_all_users_not_in_board(board_id):
 
 # gets a list of all users not in the specified board id
 def search_users_not_in_board(name, board_id):
+    in_board_sq = (
+        db.session.query(
+            UserBoard.user_id.label("id")
+        )
+        .filter(UserBoard.board_id == board_id, UserBoard.is_active)
+        .subquery()
+    )
+
     users = (
         db.session.query(
             User.name.label("name"),
@@ -118,12 +129,7 @@ def search_users_not_in_board(name, board_id):
         .outerjoin(UserBoard)
         .group_by(User.id)
         .order_by(desc("board_count"))
-        .filter(
-            or_(
-                not_(and_(UserBoard.board_id == board_id, UserBoard.is_active)),
-                UserBoard.board_id == None,  # noqa E711 -- SQLAlchemy doesn't support "is None"
-            )
-        )
+        .filter(not_(User.id.in_(in_board_sq)))
         .filter(User.name.contains(name))
     )
 
