@@ -1,6 +1,6 @@
 from flask_jwt_extended import create_access_token
 from enum import Enum
-from sqlalchemy import and_, or_, desc
+from sqlalchemy import and_, or_, desc, not_
 from validate_email import validate_email
 
 from app.main import db
@@ -76,6 +76,55 @@ def get_all_users():
         .group_by(User.id)
         .order_by(desc("board_count"))
         .all()
+    )
+
+    users_dict = list(map(lambda user: user._asdict(), users))
+
+    return users_dict
+
+
+# gets a list of all users not in the specified board id
+def get_all_users_not_in_board(board_id):
+    users = (
+        db.session.query(
+            User.name.label("name"),
+            User.id.label("id"),
+            db.func.count().filter(UserBoard.is_active).label("board_count"),
+        )
+        .outerjoin(UserBoard)
+        .group_by(User.id)
+        .order_by(desc("board_count"))
+        .filter(
+            or_(
+                not_(and_(UserBoard.board_id == board_id, UserBoard.is_active)),
+                UserBoard.board_id == None,  # noqa E711 -- SQLAlchemy doesn't support "is None"
+            )
+        )
+    )
+
+    users_dict = list(map(lambda user: user._asdict(), users))
+
+    return users_dict
+
+
+# gets a list of all users not in the specified board id
+def search_users_not_in_board(name, board_id):
+    users = (
+        db.session.query(
+            User.name.label("name"),
+            User.id.label("id"),
+            db.func.count().filter(UserBoard.is_active).label("board_count"),
+        )
+        .outerjoin(UserBoard)
+        .group_by(User.id)
+        .order_by(desc("board_count"))
+        .filter(
+            or_(
+                not_(and_(UserBoard.board_id == board_id, UserBoard.is_active)),
+                UserBoard.board_id == None,  # noqa E711 -- SQLAlchemy doesn't support "is None"
+            )
+        )
+        .filter(User.name.contains(name))
     )
 
     users_dict = list(map(lambda user: user._asdict(), users))

@@ -12,6 +12,8 @@ from ..services.user_service import (
     get_favourite_user_boards,
     get_user_profile,
     get_user_activity,
+    get_all_users_not_in_board,
+    search_users_not_in_board,
 )
 
 api = UserDto.namespace
@@ -197,5 +199,34 @@ class SearchUsers(Resource):
     def get(self, username):
         response = {
             "search_result": search_users(username),
+        }
+        return response
+
+
+@api.route("/search/notinboard/<board_id>")
+@api.param("board_id", "The board_id being searched")
+class GetAllUsersNotInBoard(Resource):
+    @api.doc("Get all users, NOT in the specified board id, token required", security="jwt")
+    @api.marshal_with(UserDto.user_search_response)
+    @jwt_required
+    def get(self, board_id):
+        response = {
+            "search_result": get_all_users_not_in_board(board_id),
+        }
+        return response
+
+
+@api.route("/search/notinboard/<board_id>/<username>")
+@api.param("board_id", "The board_id being searched")
+@api.param("username", "The username being searched")
+class SearchUsersNotInBoard(Resource):
+    @api.doc(
+        "Search for users containing <username> string, NOT in the specified board id, token required", security="jwt"
+    )
+    @api.marshal_with(UserDto.user_search_response)
+    @jwt_required
+    def get(self, board_id, username):
+        response = {
+            "search_result": search_users_not_in_board(username, board_id),
         }
         return response
