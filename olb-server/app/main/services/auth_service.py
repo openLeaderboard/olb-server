@@ -18,6 +18,7 @@ def login_user(login_data):
             "success": True,
             "message": "User successfully logged in.",
             "access_token": f"Bearer {jwt}",
+            "user_id": user.id,
         }
     else:
         response = {

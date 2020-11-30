@@ -35,6 +35,7 @@ def create_user(user_data):
             "success": True,
             "message": "User successfully registered.",
             "access_token": f"Bearer {jwt}",
+            "user_id": new_user.id,
         }
     else:
         response = {

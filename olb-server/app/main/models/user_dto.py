@@ -19,6 +19,7 @@ class UserDto:
             "success": fields.Boolean(required=True, description="Whether or not the user was successfully created"),
             "message": fields.String(required=True, description="Description of success or failure"),
             "access_token": fields.String(description="JWT access token"),
+            "user_id": fields.Integer(description="The user's id"),
         },
     )
 
