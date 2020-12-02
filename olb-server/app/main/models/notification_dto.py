@@ -68,7 +68,7 @@ class NotificationDto:
     )
 
     submission_response = namespace.model(
-        "invite_response",
+        "submission_response",
         {
             "board_id": fields.Integer(required=True, description="Id of the invite's board"),
             "board_name": fields.String(required=True, description="board's name"),
