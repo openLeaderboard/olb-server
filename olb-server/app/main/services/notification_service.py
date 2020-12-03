@@ -183,7 +183,7 @@ def get_match(match_id):
 # accept, decline, or cancel an invite
 def accept_decline_invite(invite_data):
     user_id = get_jwt_identity()
-    invite_id = invite_data["match_id"]
+    invite_id = invite_data["invite_id"]
     accept = invite_data["accept"]
 
     invite = (
