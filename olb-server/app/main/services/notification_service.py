@@ -166,7 +166,7 @@ def get_match(match_id):
             and_(
                 Match.id == match_id,
                 ~Match.is_verified,
-                or_(Match.to_user_id == user_id, BoardInvite.from_user_id == user_id),
+                or_(Match.to_user_id == user_id, Match.from_user_id == user_id),
             )
         )
         .first()
