@@ -87,9 +87,7 @@ def get_all_users():
 # gets a list of all users not in the specified board id
 def get_all_users_not_in_board(board_id):
     in_board_sq = (
-        db.session.query(
-            UserBoard.user_id.label("id")
-        )
+        db.session.query(UserBoard.user_id.label("id"))
         .filter(UserBoard.board_id == board_id, UserBoard.is_active)
         .subquery()
     )
@@ -114,9 +112,7 @@ def get_all_users_not_in_board(board_id):
 # gets a list of all users not in the specified board id
 def search_users_not_in_board(name, board_id):
     in_board_sq = (
-        db.session.query(
-            UserBoard.user_id.label("id")
-        )
+        db.session.query(UserBoard.user_id.label("id"))
         .filter(UserBoard.board_id == board_id, UserBoard.is_active)
         .subquery()
     )
@@ -272,7 +268,16 @@ def get_user_boards(user_id, query_type):
             .over(partition_by=ranked_boards_sq.c.board_id)
             .label("wins"),
             db.func.count()
-            .filter(and_(Match.winner_user_id != user_id, Match.is_verified))
+            .filter(
+                and_(
+                    Match.winner_user_id != user_id,
+                    Match.is_verified,
+                    or_(
+                        user_id == Match.from_user_id,
+                        user_id == Match.to_user_id,
+                    ),
+                )
+            )
             .over(partition_by=ranked_boards_sq.c.board_id)
             .label("losses"),
         )
@@ -280,19 +285,16 @@ def get_user_boards(user_id, query_type):
         .join(Board, ranked_boards_sq.c.board_id == Board.id)
         .join(Match, ranked_boards_sq.c.board_id == Match.board_id, isouter=True)
         .order_by(ranked_boards_sq.c.rating.desc())
-        .filter(
-            and_(
-                ranked_boards_sq.c.user_id == user_id,
-                or_(
-                    ranked_boards_sq.c.user_id == Match.from_user_id,
-                    ranked_boards_sq.c.user_id == Match.to_user_id,
-                    Match.id == None,  # noqa E711 -- SQLAlchemy doesn't support "is None"
-                ),
-            )
-        )
+        .filter(ranked_boards_sq.c.user_id == user_id)
     )
 
+    print(user_id)
+
+    print(full_boards_query)
+
     boards_dict = list(map(add_icon_convert, full_boards_query))
+
+    print(boards_dict)
 
     return boards_dict
 
