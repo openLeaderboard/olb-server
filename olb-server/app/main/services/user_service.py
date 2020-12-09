@@ -48,6 +48,7 @@ def create_user(user_data):
 
 # searches for users whose name contains the provided string
 def search_users(name):
+    print(name)
     users = (
         db.session.query(
             User.name.label("name"),
@@ -288,13 +289,7 @@ def get_user_boards(user_id, query_type):
         .filter(ranked_boards_sq.c.user_id == user_id)
     )
 
-    print(user_id)
-
-    print(full_boards_query)
-
     boards_dict = list(map(add_icon_convert, full_boards_query))
-
-    print(boards_dict)
 
     return boards_dict
 
