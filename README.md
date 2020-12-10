@@ -7,7 +7,7 @@ The backend for openLeaderboard
 * [poetry](https://python-poetry.org/docs/#installation)
 * Python 3
 * Docker
-* pyenv
+* [pyenv](https://github.com/pyenv/pyenv-installer) (make sure you have ~/.zshrc and ~/.zsh_profile files or this will mess up on a mac install)
 
 #### Steps
 1. Clone the repo and open it
@@ -15,12 +15,26 @@ The backend for openLeaderboard
 git clone https://github.com/openLeaderboard/olb-server.git
 cd olb-server
 ```
-2. Install the dependencies with poetry
+2. Install python 3.8+ with pyenv
+```
+pyenv install -v 3.8.0
+```
+
+3a. Setup pyenv to to use python 3.8+ in the olb-server directory
+```
+pyenv local 3.8.0
+```
+3b. If this doesn't work, try setting it to the global version
+```
+pyenv global 3.8.0
+```
+
+4. Install the dependencies with poetry
 ```bash
 poetry install
 ```
 
-3. Setup pyenv to to use python 3.8+ in the olb-server directory
+
 
 ## Setup database
 1. Install docker for your platform ([mac link](https://hub.docker.com/editions/community/docker-ce-desktop-mac))
@@ -30,7 +44,7 @@ poetry install
 docker-compose up
 ```
 
-3. Create and upgrade the database
+3. Create and upgrade the database (database must be running before you run these commands or they won't do anything)
 ```bash
 poetry run python manage.py reset_db
 poetry run python manage.py db upgrade
@@ -46,6 +60,8 @@ docker-compose up
 ```bash
 poetry run python manage.py run
 ```
+
+**NOTE:** You will need to be running both of these simultaneously, use tmux or multiple terminals.
 
 ## Setup VSCode to use right environment
 By default vscode will use your normal python install instead of the poetry virtual environment.
